@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  nginx:
+    build: 
+      context: ./nginx
+      dockerfile: Dockerfile.nginx
+    image: nginx_custom
+    container_name: nginx_custom
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+  
+  nodeserver:
+    build: 
+      context: ./node_app
+      dockerfile: Dockerfile.nodejs
+    image: nodejs_custom
+    container_name: nodejs_custom
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
+    command: ["node", "index.js"]
+    tty: true
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
+    image: mysql_custom
+    container_name: mysql_custom
+    volumes:
+      - ./mysql:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+    
