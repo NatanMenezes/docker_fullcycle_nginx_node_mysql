@@ -19,8 +19,15 @@ services:
     image: nodejs_custom
     container_name: nodejs_custom
     entrypoint: dockerize -wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
-    command: ["node", "index.js"]
     tty: true
+    volumes:
+      - ./node_app:/usr/src/app
+    command: 
+      - sh
+      - -c
+      - |
+        npm install
+        node index.js
     networks:
       - app-network
     depends_on:
