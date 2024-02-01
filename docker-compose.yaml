@@ -11,6 +11,8 @@ services:
       - "8080:80"
     networks:
       - app-network
+    depends_on:
+      - nodeserver
   
   nodeserver:
     build: 
